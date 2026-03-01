@@ -4,7 +4,8 @@ A VS Code extension that plays a **"faaaaaah"** sound whenever an error is detec
 
 ## Features
 
-- **Real-time terminal monitoring** — listens to all terminal output using the stable `onDidWriteTerminalData` API
+- **Real-time terminal monitoring** 
+- **Exit-code detection** — also triggers on any command that exits with a non-zero code, even if the output contains no error text
 - **Cross-platform** — Windows (PowerShell), macOS (`afplay`), Linux (`aplay`/`paplay`)
 - **Toggle on/off** — via command palette or status bar click
 - **Status bar indicator** — shows whether the sound is enabled or disabled
@@ -13,20 +14,57 @@ A VS Code extension that plays a **"faaaaaah"** sound whenever an error is detec
 - **ANSI-safe** — strips escape codes before matching, so colored output won't cause false matches
 - **Line-buffered** — reassembles chunked terminal data into complete lines before matching
 
-## Setup
+## Installation
 
-1. Run `npm install` to install dev dependencies
-2. **Place your `faaaaaah.wav` file** in the `sounds/` directory  
-   (The file must be named `faaaaaah.wav`)
-3. Press **F5** to launch the Extension Development Host
-4. Open a terminal in the dev host and trigger an error — you'll hear it!
+### Option 1 — Open VSX Registry (recommended)
+
+> 🔗 **Extension page:** [https://open-vsx.org/extension/AbhishekChamp879/faaaaaah-on-error](https://open-vsx.org/extension/AbhishekChamp879/faaaaaah-on-error)
+
+**Install directly inside VS Code (VSCodium / any OpenVSX-connected editor):**
+
+1. Press `Ctrl+Shift+X` to open the Extensions panel
+2. Search for **Faaaaaah on Error** or **AbhishekChamp879.faaaaaah-on-error**
+3. Click **Install**
+4. Click **Reload Window** when prompted
+
+**Or install via terminal:**
+
+```bash
+code --install-extension AbhishekChamp879.faaaaaah-on-error
+```
+
+---
+
+### Option 2 — Download & Install VSIX manually
+
+1. Go to [https://open-vsx.org/extension/AbhishekChamp879/faaaaaah-on-error](https://open-vsx.org/extension/AbhishekChamp879/faaaaaah-on-error)
+2. Click the **Download** button on the right side of the page
+3. Save the `.vsix` file to your computer
+4. Open VS Code
+5. Press `Ctrl+Shift+P` and run **Extensions: Install from VSIX...**
+6. Browse to and select the downloaded `.vsix` file
+7. Click **Reload Window** when prompted
+
+---
+
+After installation, the **🔊 Faaaaaah** button will appear in the bottom-left status bar.
+
+## Requirements
+
+- VS Code **1.93.0** or later
+- **Shell integration must be enabled** (it is on by default for PowerShell, bash, zsh, and fish — does **not** work with plain `cmd.exe`)
+- **Windows:** PowerShell — built-in, no extra install needed
+- **macOS:** `afplay` — built-in
+- **Linux:** `aplay` or `paplay` — install via `sudo apt install alsa-utils` or `pulseaudio-utils`
+
+> **Note for Windows users:** Make sure you are using **PowerShell** (not Command Prompt) as your default terminal in VS Code. Go to `Settings` → search `terminal.integrated.defaultProfile.windows` → set it to **PowerShell**.
 
 ## Usage
 
 | Action | How |
 |--------|-----|
-| Toggle sound | Click the **$(unmute) Faaaaaah** button in the status bar, or run `Faaaaaah: Toggle Error Sound` from the command palette |
-| Change error patterns | Open Settings → search for `faaaaaah.errorPatterns` |
+| Toggle sound on/off | Click the **🔊 Faaaaaah** button in the status bar, or run `Faaaaaah: Toggle Error Sound` from the command palette (`Ctrl+Shift+P`) |
+| Change error patterns | Open Settings (`Ctrl+,`) → search for `faaaaaah.errorPatterns` |
 | Adjust cooldown | Open Settings → search for `faaaaaah.cooldownMs` |
 
 ## Configuration
@@ -35,7 +73,7 @@ A VS Code extension that plays a **"faaaaaah"** sound whenever an error is detec
 |---------|------|---------|-------------|
 | `faaaaaah.enabled` | `boolean` | `true` | Enable/disable the error sound |
 | `faaaaaah.cooldownMs` | `number` | `3000` | Min milliseconds between consecutive sound plays |
-| `faaaaaah.errorPatterns` | `string[]` | `["\\berror[:\\s]", "\\bFAILED\\b", ...]` | Regex patterns (case-insensitive) matched against terminal lines |
+| `faaaaaah.errorPatterns` | `string[]` | see below | Regex patterns (case-insensitive) matched against terminal lines |
 
 ### Default Error Patterns
 
@@ -50,19 +88,29 @@ A VS Code extension that plays a **"faaaaaah"** sound whenever an error is detec
 \bpanic\b       — matches Go/Rust panics
 ```
 
-## Packaging
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| No status bar button after install | Press `Ctrl+Shift+P` → **Developer: Reload Window** |
+| Sound doesn't play on errors | Make sure you're using **PowerShell** (not cmd.exe) — shell integration is required |
+| Sound plays too often | Increase `faaaaaah.cooldownMs` in Settings (default: 3000 ms) |
+| Sound never plays | Check `faaaaaah.enabled` is `true` in Settings, and confirm the status bar shows 🔊 (not 🔇) |
+| VS Code version too old | Requires VS Code ≥ 1.93.0 — go to `Help → Check for Updates` |
+
+## Development
+
+```bash
+git clone https://github.com/AbhishekChamp879/faaah_extension
+cd faaah_extension
+npm install
+```
+
+Press **F5** to launch the Extension Development Host and test live.
+
+To package a new `.vsix`:
 
 ```bash
 npm run compile
 npx vsce package
 ```
-
-This produces a `.vsix` file you can install via `Extensions: Install from VSIX...`.
-
-## Requirements
-
-- VS Code **1.93.0** or later
-- A `.wav` audio file placed at `sounds/faaaaaah.wav`
-- **Windows:** PowerShell (built-in)
-- **macOS:** `afplay` (built-in)
-- **Linux:** `aplay` or `paplay`
