@@ -23,7 +23,14 @@ function buildErrorRegexes(): RegExp[] {
         '\\bERROR\\b',
         '\\bpanic\\b',
     ]);
-    return patterns.map((p) => new RegExp(p, 'i'));
+    return patterns.reduce<RegExp[]>((acc, p) => {
+        try {
+            acc.push(new RegExp(p, 'i'));
+        } catch (e) {
+            console.warn(`[faaaaaah] Invalid regex pattern skipped: ${p}`);
+        }
+        return acc;
+    }, []);
 }
 
 let errorRegexes: RegExp[] = [];
@@ -42,18 +49,20 @@ function playSound(extensionPath: string): void {
     }
 
     switch (process.platform) {
-        case 'win32':
+        case 'win32': {
+            const escapedPath = soundFile.replace(/'/g, "''");
             execFile('powershell.exe', [
                 '-NoProfile',
                 '-WindowStyle', 'Hidden',
                 '-Command',
-                `(New-Object System.Media.SoundPlayer '${soundFile}').PlaySync()`,
+                `(New-Object System.Media.SoundPlayer '${escapedPath}').PlaySync()`,
             ], (err) => {
                 if (err) {
                     console.error('[faaaaaah] Windows playback failed:', err.message);
                 }
             });
             break;
+        }
 
         case 'darwin':
             execFile('afplay', [soundFile], (err) => {
