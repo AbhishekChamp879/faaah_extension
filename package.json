@@ -1,0 +1,73 @@
+{
+  "name": "faaaaaah-on-error",
+  "displayName": "Faaaaaah on Error",
+  "description": "Plays a 'faaaaaah' sound whenever an error is detected in the terminal output.",
+  "version": "0.0.1",
+  "publisher": "AbhishekChamp879",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbhishekChamp879/faaah_extension"
+  },
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "faaaaaah.toggle",
+        "title": "Faaaaaah: Toggle Error Sound"
+      }
+    ],
+    "configuration": {
+      "title": "Faaaaaah",
+      "properties": {
+        "faaaaaah.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable the error sound."
+        },
+        "faaaaaah.cooldownMs": {
+          "type": "number",
+          "default": 3000,
+          "description": "Minimum milliseconds between consecutive sound plays to prevent spam."
+        },
+        "faaaaaah.errorPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "\\berror[:\\s]",
+            "\\bFAILED\\b",
+            "\\bfatal\\b",
+            "\\bERR!\\b",
+            "\\bException\\b",
+            "\\bFATAL\\b",
+            "\\bERROR\\b",
+            "\\bpanic\\b"
+          ],
+          "description": "Array of regex patterns (case-insensitive) to match against terminal output lines. If any pattern matches, the sound plays."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.93.0",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0",
+    "@vscode/vsce": "^2.24.0"
+  }
+}
